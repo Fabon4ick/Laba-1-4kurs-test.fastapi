@@ -159,7 +159,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 # Маршрут для получения пользователя по ID
 @app.get("/users/", response_model=list[UserResponse])
-def get_users(db: Session = Depends(get_db)):
+async def get_users(current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
     users = db.query(User).all()
     if not users:
         raise HTTPException(status_code=404, detail="Users not found")
@@ -167,7 +167,7 @@ def get_users(db: Session = Depends(get_db)):
 
 # Маршрут для удаления пользователя по ID
 @app.delete("/users/{user_id}", response_model=UserResponse)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+async def delete_user(user_id: int, current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -177,7 +177,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 # Маршрут для обновления пользователя
 @app.put("/users/{user_id}", response_model=UserResponse)
-def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
+async def update_user(user_id: int, user_update: UserUpdate, current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -223,7 +223,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/register/", response_model=UserResponse)
-def register_user(user: UserCreate, db: Session = Depends(get_db)):
+async def register_user(user: UserCreate, current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
     hashed_password = hash_password(user.password)
     db_user = User(
         username=user.username,
@@ -238,4 +238,4 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         return db_user
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="Username or Email already registered")
+        raise HTTPException(status_code=400, detail="Username or Email already registered!")
