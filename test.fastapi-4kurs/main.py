@@ -19,7 +19,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Настройка базы данных MySQL
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://isp_pp_Shipitsyn:1234@77.91.86.135/isp_pp_Shipitsyn"
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://isp_p_Shipitsyn:12345@77.91.86.135/isp_p_Shipitsyn"
 SECRET_KEY = "34hjg534kjh6kj4hjk236h346jkh2jlk6g2hi6flgh23g6jk2lgh62"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
